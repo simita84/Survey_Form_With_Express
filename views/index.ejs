@@ -1,0 +1,87 @@
+<html>
+  <head>
+  <title>Home</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+  <style type="text/css">
+    .user_info,.user_info p{
+      background: green;
+      border: 2px solid black;
+      color: white;
+    }
+  </style>
+
+  <script>
+      $(document).ready(function (){
+         //alert("hello");
+         io = io.connect();
+
+        //#--------Emitting form data
+        $("#survey_form").submit(function(e){
+          e.preventDefault();
+          io.emit("posting_form", {
+            name: $("#name").val(), 
+            location: $("#dojo_location").val(), 
+            language: $("#favorite_language").val(), 
+            comment: $("#comment").val() 
+          });
+        });
+
+        //#------------Listeneing to server event your_info
+        io.on('your_info',function(data){
+          var data = JSON.stringify(data);
+          $('.user_info').text("You emitted the following info to the server"+data);     
+        });
+
+        //#------------Listeneing to server event lucky_number
+        io.on('lucky_number',function(data){
+          $('.user_info').after("<p> Your lucky number is : "+data.rand_number+"</p>");
+        }); 
+      });//------------------end of jquery
+  </script>
+</head>
+<body class="container">
+ <div class="row">
+  <div class="col-md-5 user_info">
+  
+  </div>
+ </div>
+    <h3>Submit the form</h3>
+  <div class="row">
+   <div class="col-md-5">
+     <form action="" id="survey_form" class="form-horizontal">​
+        <div class="form-group">​
+          <label for="name" class="col-sm-5">Your Name:</label>​
+          <input type="text" name="name" id="name" class="form-control" />​
+        </div>​
+        <div class="form-group">​
+          <label for="dojo_location" class="col-sm-5">Dojo Location:</label>​
+          <select name="dojo_location" id="dojo_location" class="form-control">​
+            <option value="Mountain View">Mountain View</option>​
+            <option value="Seattle">Seattle</option>​
+          </select>​
+        </div>​
+        <div class="form-group">​
+          <label for="favorite_language" class="col-sm-5">Favorite Language:</label>​
+          <select name="favorite_language" id="favorite_language" class="form-control">​
+            <option value="HTML">HTML</option>​
+            <option value="Javascript">Javascript</option>​
+            <option value="PHP">PHP</option>​
+            <option value="RoR">Ruby on Rails</option>​
+          </select>​
+        </div>​
+        <div class="form-group">​
+          <label for="comment" class="col-sm-5">Comment (optional):</label>​
+          <textarea name="comment" id="comment" class="form-control"></textarea>​
+        </div>​
+        <input type="submit" class="btn btn-primary pull-right" />​
+        <div class="clearfix"></div>​
+      </form>​
+   </div> 
+  </div>   
+ 
+    <!-- web page goes here -->
+</body>
+</html>
